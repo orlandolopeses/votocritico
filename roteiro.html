@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversa de porta — Voto crítico</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!--
+Brief
+- Formato: A6 retrato (105 x 148 mm), frente e verso; na tela, as duas faces lado a lado.
+- Onde: impresso, no bolso do voluntário, lido de pé na rua.
+- Reter: pergunte antes de falar; o que dizer a cada perfil; o que a lei proíbe.
+- Restrições: clients/voto-critico/brand/DESIGN.md (Montserrat + Barlow Condensed, paleta da campanha), sem urna nem logo oficial; guia do voluntário, não é material para o eleitor.
+-->
+<style>
+  :root { --ink:#2e2e2e; --paper:#ffffff; --sand:#f6efe7; --mute:#5b5b5b; --terra:#a20301; --azul:#0034d2; --marinho:#012288; --amarelo:#ffd400; }
+  @page { size: 105mm 148mm; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #e7e5e4; color: var(--ink); font-family: Montserrat, Arial, sans-serif; }
+  .folhas { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; padding: 24px; }
+  .face { width: 105mm; height: 148mm; background: var(--paper); padding: 7mm 7mm 6mm; display: flex; flex-direction: column; overflow: hidden; }
+  .kicker { align-self: flex-start; font-size: 6.8pt; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--marinho); background: var(--amarelo); border-radius: 1mm; padding: .6mm 1.8mm; transform: rotate(-2deg); margin: 0 0 2mm; }
+  h1 { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-weight: 900; text-transform: uppercase; font-size: 25pt; line-height: 1; color: var(--terra); margin: 0 0 3mm; }
+  h2 { font-weight: 800; font-size: 9.8pt; color: var(--marinho); margin: 3.2mm 0 1.2mm; }
+  p, li { font-size: 8.5pt; line-height: 1.34; margin: 0; }
+  .abre { background: var(--sand); border-radius: 2mm; padding: 2.2mm 2.8mm; margin-bottom: 1mm; }
+  .abre p + p { margin-top: 1mm; }
+  .fala { font-size: 9.2pt; font-weight: 600; color: var(--marinho); }
+  .perfil { display: grid; grid-template-columns: 19mm 1fr; gap: 0 2.4mm; padding: 2mm 0; border-top: 1px solid #e5e5e5; }
+  .perfil b { font-size: 8.1pt; font-weight: 800; line-height: 1.25; color: var(--marinho); }
+  .perfil b span { display: block; font-weight: 400; color: var(--mute); font-size: 7pt; }
+  ul { margin: 0; padding-left: 3.6mm; }
+  li + li { margin-top: 1.2mm; }
+  .lei li { font-size: 8.1pt; }
+  .rodape { margin-top: auto; padding-top: 2mm; border-top: 1px solid #e5e5e5; font-size: 6.6pt; color: var(--mute); display: flex; justify-content: space-between; }
+  .acao { text-align: center; padding: 0 0 24px; font-size: 14px; }
+  .acao button { font: 800 14px Montserrat, Arial, sans-serif; letter-spacing: .04em; text-transform: uppercase; background: var(--azul); color: #fff; border: 0; border-radius: 999px; padding: 12px 22px; cursor: pointer; }
+  @media print {
+    html, body { background: #fff; }
+    .folhas { display: block; padding: 0; }
+    .face { page-break-after: always; }
+    .acao { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="folhas">
+
+<section class="face" aria-label="Frente">
+  <p class="kicker">Guarapari · 2º turno · 25 out</p>
+  <h1>Conversa de porta</h1>
+  <div class="abre">
+    <p class="fala">"Boa tarde, a gente é aqui do bairro e está conversando com os vizinhos sobre o dia 25. No primeiro turno, o que pesou na sua escolha?"</p>
+    <p>Pergunte antes de falar. Ouça. Cinco minutos por porta, no máximo.</p>
+  </div>
+
+  <h2>Se a pessoa…</h2>
+  <div class="perfil">
+    <b>anulou ou votou em branco<span>3.549 na cidade</span></b>
+    <p>Não discuta política nacional. Pergunte: "O que mudou pra você nos últimos dois anos?" Para quem tem carteira assinada: desde janeiro, quem ganha até R$ 5 mil não paga imposto de renda (Lei 15.270/2025).</p>
+  </div>
+  <div class="perfil">
+    <b>votou em Cury<span>2.155</span></b>
+    <p>Valoriza diálogo e tom calmo. Fale de cuidado: SUS, saúde mental, escola. Nada de briga.</p>
+  </div>
+  <div class="perfil">
+    <b>votou em Renan<span>1.853</span></b>
+    <p>Não discuta. Se abrir conversa, o ponto comum é não querer clã no poder. Deixe o contato e siga.</p>
+  </div>
+  <div class="perfil">
+    <b>votou em Caiado<span>1.304</span></b>
+    <p>Prioridade baixa. Agradeça e siga.</p>
+  </div>
+
+  <div class="rodape"><span>Guia do voluntário · não distribuir</span><span>vire →</span></div>
+</section>
+
+<section class="face" aria-label="Verso">
+  <p class="kicker">Quem já votou Lula</p>
+  <div class="abre">
+    <p class="fala">"Dia 25 tem de novo, das 8h às 17h, no mesmo lugar. Sabe onde vota? Dá pra ir a pé ou de ônibus?"</p>
+    <p>Local de votação: app e-Título ou tse.jus.br. O risco aqui é a pessoa não voltar.</p>
+  </div>
+
+  <h2>Não faça</h2>
+  <ul>
+    <li>Prometer o que a campanha não promete.</li>
+    <li>Falar de pesquisa ou repassar boato.</li>
+    <li>Na dúvida: "Não sei, vou perguntar e te volto."</li>
+  </ul>
+
+  <h2>O que a lei manda</h2>
+  <ul class="lei">
+    <li>Lambe só em muro particular, com autorização do dono, até o tamanho de uma folha A1. Poste, ponto de ônibus, loja e prédio público, não. Cartaz de outro candidato não se cobre.</li>
+<li>Todo impresso traz CPF ou CNPJ de quem imprimiu e de quem pagou, e a tiragem.</li>
+<li>Mensagem nova no WhatsApp ou rede social: até 24/10. Só para os seus contatos, sem disparo em massa.</li>
+    <li>Caminhada, carreata e material: até 22h de 24/10. Comício: até 22/10.</li>
+    <li>De 24 a 26/10 ninguém transporta eleitor. Só ônibus de linha ou carro da própria família. Carona é crime (Lei 6.091/1974).</li>
+    <li>Dia 25: só adesivo, broche ou bandeira, sozinho e em silêncio. Nada de abordar eleitor.</li>
+  </ul>
+
+  <div class="rodape"><span>Dados: TSE, 1º turno, 04/10/2026</span><span>Voto crítico</span></div>
+</section>
+
+</div>
+<p class="acao"><button onclick="window.print()">Imprimir (A6, frente e verso)</button></p>
+</body>
+</html>

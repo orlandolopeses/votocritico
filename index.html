@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voto crítico — Guarapari, 2º turno</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="Apoio à organização dos voluntários de Guarapari no 2º turno.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<!--
+Brief
+- Formato: página única, lida sobretudo no celular; mapa interativo.
+- Onde: link repassado no grupo de WhatsApp "Voto crítico"; fora do Google (noindex).
+- Reter: onde agir em Guarapari, o que a lei deixa fazer, a agenda do grupo.
+- Restrições: clients/voto-critico/brand/DESIGN.md; sem nome nem telefone de integrante; sem número de urna.
+-->
+<style>
+  :root {
+    --vermelho:#fd0000; --vermelho-escuro:#a20301; --verde:#00b923; --verde-escuro:#006820;
+    --amarelo:#ffd400; --azul:#0034d2; --azul-escuro:#00279c; --marinho:#012288;
+    --creme:#f6efe7; --cinza:#f3f2f3; --texto:#2e2e2e; --mute:#5b5b5b; --branco:#ffffff;
+    --titulo: "Barlow Condensed", "Arial Narrow", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 60px; }
+  body { margin: 0; background: var(--branco); color: var(--texto); font-family: Montserrat, Arial, sans-serif; font-size: 16px; line-height: 1.55; }
+  a { color: var(--azul); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+  .experimental { background: var(--azul-escuro); color: var(--branco); font-size: 13px; font-weight: 700; text-align: center; padding: 8px 16px; letter-spacing: .02em; }
+
+  header.topo { background: var(--vermelho); color: var(--branco); padding: 34px 0 40px; overflow: hidden; }
+  header.topo .wrap { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px; position: relative; }
+  .lula { display: block; width: 320px; height: auto; transform: rotate(5deg); filter: drop-shadow(6px 8px 0 rgba(110, 0, 0, .35)); margin: -12px 8px -18px 0; }
+  .selo-topo { display: inline-block; background: var(--amarelo); color: var(--marinho); font: 800 15px Montserrat, Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; padding: 6px 14px; border-radius: 6px; transform: rotate(-2deg); margin-bottom: 18px; box-shadow: 4px 4px 0 var(--vermelho-escuro); }
+  header h1 { font-family: var(--titulo); font-weight: 900; text-transform: uppercase; font-size: clamp(76px, 22vw, 168px); line-height: .82; letter-spacing: -.01em; margin: 0 0 18px; }
+  header p { margin: 0; max-width: 32em; font-size: 19px; font-weight: 700; line-height: 1.4; }
+  .contagem { display: inline-block; margin-top: 20px; background: var(--branco); color: var(--vermelho-escuro); border-radius: 999px; padding: 8px 18px; font-size: 16px; font-weight: 700; }
+  .contagem:empty { display: none; }
+  .contagem b { font-size: 22px; font-weight: 900; }
+
+  nav.menu { position: sticky; top: 0; z-index: 1000; background: var(--creme); box-shadow: 0 1px 0 rgba(0,0,0,.06); }
+  nav.menu .wrap { display: flex; gap: 2px; overflow-x: auto; white-space: nowrap; padding-top: 10px; padding-bottom: 10px; scrollbar-width: none; }
+  nav.menu a { color: var(--vermelho-escuro); text-decoration: none; font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 8px 10px; border-radius: 999px; }
+  nav.menu a:hover, nav.menu a:focus-visible { background: var(--vermelho); color: var(--branco); }
+
+  section.bloco { padding: 44px 0 28px; }
+  section.alt { background: var(--creme); }
+  .c-azul { --c: var(--azul); } .c-vermelho { --c: var(--vermelho-escuro); } .c-verde { --c: var(--verde-escuro); }
+  h2.selo { display: inline-block; font-family: var(--titulo); font-weight: 800; text-transform: uppercase; font-size: clamp(34px, 8vw, 50px); line-height: 1; color: var(--branco); background: var(--c, var(--azul)); padding: 8px 16px 6px; border-radius: 8px; transform: rotate(-1.5deg); margin: 0 0 22px; box-shadow: 5px 5px 0 rgba(0,0,0,.12); }
+  h3 { font-size: 19px; font-weight: 800; margin: 26px 0 8px; line-height: 1.25; color: var(--marinho); }
+  p { margin: 0 0 12px; }
+  .lead { font-size: 18px; max-width: 40em; }
+  .mute { color: var(--mute); font-size: 14px; }
+  .caixa { background: var(--cinza); border-radius: 14px; padding: 18px 20px; }
+  .alt .caixa, .alt .acao, .alt .material, .alt .tarefa { background: var(--branco); }
+  .alerta { background: var(--amarelo); color: var(--texto); border-radius: 14px; padding: 16px 20px; font-weight: 500; }
+  .alt .alerta { background: var(--amarelo); }
+  ul.lista { margin: 0; padding-left: 20px; }
+  ul.lista li + li { margin-top: 6px; }
+
+  /* agenda */
+  .agenda { display: grid; gap: 12px; }
+  .acao { display: grid; grid-template-columns: 92px 1fr; gap: 0 16px; align-items: start; background: var(--cinza); border-radius: 14px; padding: 14px; }
+  .acao .dia { background: var(--azul); color: var(--branco); border-radius: 10px; text-align: center; padding: 10px 6px; font-family: var(--titulo); font-weight: 800; font-size: 30px; line-height: 1; text-transform: uppercase; }
+  .acao .dia small { display: block; font-family: Montserrat, Arial, sans-serif; font-weight: 700; font-size: 12px; margin-top: 4px; text-transform: none; }
+  .acao .dia.combinar { background: var(--amarelo); color: var(--marinho); font-size: 19px; line-height: 1.05; padding: 12px 6px; }
+  .acao b { display: block; font-size: 17px; font-weight: 800; line-height: 1.3; color: var(--marinho); margin-top: 4px; }
+  .acao .det { font-size: 14px; color: var(--mute); margin-top: 4px; }
+  .acoes-planilha { margin-top: 16px; font-size: 15px; }
+
+  /* mapa */
+  .tarefas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 18px 0; }
+  .tarefa { background: var(--cinza); border-radius: 14px; border-top: 8px solid; padding: 16px 18px; }
+  .tarefa b { display: block; font-size: 19px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+  .tarefa p { font-size: 15px; margin: 0 0 6px; }
+  .rotas { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; margin-top: 16px; }
+  .rotas h3 { margin-top: 0; font-size: 19px; }
+  .rotas ol { margin: 0; padding-left: 22px; font-size: 15px; }
+  .rotas li { cursor: pointer; }
+  .rotas li + li { margin-top: 5px; }
+  .rotas li span { display: block; color: var(--mute); font-size: 13px; }
+  .rotas li:hover { color: var(--azul); }
+  .pino { background: #fff; border: 3px solid; border-radius: 50%; width: 26px; height: 26px; line-height: 20px; text-align: center; font: 800 12px Montserrat, Arial, sans-serif; color: var(--texto); }
+  #mapa { height: 62vh; min-height: 380px; border-radius: 14px; overflow: hidden; background: #e9e6df; }
+  .placar { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 10px; }
+  .placar span { background: var(--branco); border-radius: 999px; padding: 6px 14px; font-size: 14px; font-weight: 600; }
+  .placar b { font-size: 16px; font-weight: 900; color: var(--marinho); }
+  .leaflet-container { font-family: Montserrat, Arial, sans-serif; }
+  .leaflet-popup-content { font-size: 14px; line-height: 1.4; }
+
+  /* lambe */
+  .colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .pode, .naopode { color: var(--branco); border-radius: 14px; padding: 18px 20px; }
+  .pode { background: var(--verde-escuro); }
+  .naopode { background: var(--vermelho-escuro); }
+  .pode h3, .naopode h3 { color: var(--branco); font-family: var(--titulo); font-weight: 800; font-size: 30px; text-transform: uppercase; margin: 0 0 8px; }
+  .pode .mute, .naopode .mute { color: rgba(255,255,255,.85); }
+
+  /* conversa */
+  .fala { font-size: 19px; font-weight: 600; line-height: 1.45; background: var(--branco); color: var(--marinho); border-radius: 14px; padding: 16px 20px; margin: 0 0 12px; }
+  .perfil { display: grid; grid-template-columns: 160px 1fr; gap: 0 16px; padding: 14px 0; border-top: 1px solid rgba(0,0,0,.08); }
+  .perfil b { font-size: 16px; font-weight: 800; line-height: 1.3; color: var(--marinho); }
+  .perfil b span { display: block; font-weight: 600; color: var(--mute); font-size: 13px; }
+  .perfil p { margin: 0; }
+  .botao { display: inline-block; background: var(--azul); color: var(--branco); text-decoration: none; border-radius: 999px; padding: 12px 22px; font-size: 14px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+  .botao:hover { background: var(--marinho); }
+
+  /* mensagens */
+  .msg { padding: 20px 0 8px; }
+  .msg + .msg { border-top: 1px solid rgba(0,0,0,.08); }
+  .msg .quando { font-size: 14px; color: var(--mute); margin: 2px 0 10px; }
+  .msg blockquote { margin: 0; padding: 16px 20px; background: var(--cinza); border-radius: 14px; font-size: 17px; line-height: 1.5; }
+  .copiar { margin-top: 10px; font: 800 14px Montserrat, Arial, sans-serif; letter-spacing: .04em; text-transform: uppercase; background: var(--azul); color: var(--branco); border: 0; border-radius: 999px; padding: 12px 22px; min-height: 44px; cursor: pointer; }
+  .copiar.ok { background: var(--verde-escuro); }
+
+  /* prazos */
+  .prazos { display: grid; gap: 12px; }
+  .prazo { display: grid; grid-template-columns: 170px 1fr; gap: 0 16px; align-items: start; background: var(--branco); border-radius: 14px; padding: 14px; }
+  .prazo .d { display: inline-block; background: var(--amarelo); color: var(--marinho); border-radius: 10px; padding: 8px 12px; font-family: var(--titulo); font-weight: 800; font-size: 22px; line-height: 1.05; text-transform: uppercase; }
+  .prazo .d { justify-self: start; }
+  .prazo p { margin: 4px 0 0; }
+
+  .atalhos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-top: 28px; }
+  .atalho { display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 18px; min-height: 210px; border-radius: 14px; padding: 26px 18px 20px; text-align: center; text-decoration: none; color: var(--branco); }
+  .atalho strong { font-family: var(--titulo); font-weight: 900; text-transform: uppercase; font-size: clamp(40px, 6vw, 58px); line-height: .9; }
+  .atalho span { border-radius: 999px; padding: 7px 20px; font-size: 14px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--branco); }
+  .atalho.a1 { background: var(--vermelho); } .atalho.a1 span { background: var(--vermelho-escuro); }
+  .atalho.a2 { background: var(--amarelo); color: var(--verde-escuro); } .atalho.a2 span { background: #6b5a00; }
+  .atalho.a3 { background: var(--azul); } .atalho.a3 span { background: var(--azul-escuro); }
+  .atalho:hover { transform: translateY(-2px); }
+
+  .materiais { display: grid; gap: 10px; }
+  .material { display: block; background: var(--cinza); border-radius: 14px; padding: 14px 18px; text-decoration: none; color: var(--texto); }
+  .material b { display: block; color: var(--marinho); }
+  .material span { font-size: 14px; color: var(--mute); }
+  .material:hover { outline: 2px solid var(--azul); }
+
+  footer { background: var(--azul-escuro); color: var(--branco); padding: 30px 0 40px; font-size: 14px; }
+  footer p { margin: 0 0 8px; }
+  footer a { color: var(--branco); }
+
+  @media (max-width: 640px) {
+    .colunas { grid-template-columns: 1fr; }
+    .perfil, .prazo { grid-template-columns: 1fr; gap: 6px; }
+    .acao { grid-template-columns: 76px 1fr; }
+    header.topo .wrap { display: block; }
+    header h1 { font-size: 18vw; }
+    .lula { position: absolute; right: 16px; top: -6px; width: 31vw; margin: 0; filter: drop-shadow(3px 4px 0 rgba(110, 0, 0, .35)); }
+    .atalhos { grid-template-columns: 1fr; gap: 10px; }
+    .atalho { min-height: 0; flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 18px; text-align: left; }
+    .atalho strong { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="experimental">Versão experimental, para o grupo avaliar. Não divulgue fora do grupo por enquanto.</div>
+
+<header class="topo">
+  <div class="wrap">
+    <div>
+      <span class="selo-topo">Guarapari · 2º turno</span>
+      <h1>Voto<br>crítico</h1>
+      <p>Organização dos voluntários de Guarapari pelo voto em Lula no 2º turno, domingo, 25 de outubro, das 8h às 17h.</p>
+      <p class="contagem" id="contagem"></p>
+    </div>
+    <img class="lula" src="img/lula-sticker.webp" width="720" height="924" alt="Lula sorrindo, com os dois polegares para cima">
+  </div>
+</header>
+
+<nav class="menu" aria-label="Seções">
+  <div class="wrap">
+    <a href="#agenda">Agenda</a>
+    <a href="#onde">Onde agir</a>
+    <a href="#lambe">Lambe</a>
+    <a href="#conversa">Conversa de porta</a>
+    <a href="#mensagens">Mensagens</a>
+    <a href="#prazos">Lei e prazos</a>
+    <a href="#materiais">Materiais</a>
+  </div>
+</nav>
+
+<main>
+
+<div class="wrap atalhos">
+  <a class="atalho a1" href="#onde"><strong>Onde<br>agir</strong><span>Ver o mapa</span></a>
+  <a class="atalho a2" href="#lambe"><strong>Lambe<br>na lei</strong><span>Pode e não pode</span></a>
+  <a class="atalho a3" href="#mensagens"><strong>Mensagens</strong><span>Prontas para copiar</span></a>
+</div>
+
+<section class="bloco c-azul" id="agenda">
+  <div class="wrap">
+    <h2 class="selo">Agenda</h2>
+    <div class="agenda" id="lista-agenda"><p class="mute">Carregando a agenda…</p></div>
+    <p class="acoes-planilha">Para incluir uma ação, combine no grupo e coloque na <a id="link-planilha" href="#" target="_blank" rel="noopener">planilha da agenda</a>. Se ainda não tem acesso, peça por lá.</p>
+  </div>
+</section>
+
+<section class="bloco c-vermelho alt" id="onde">
+  <div class="wrap">
+    <h2 class="selo">Onde agir</h2>
+    <p class="lead">Guarapari não vira: no 1º turno, Flávio fez 44.951 votos e Lula, 23.362. O que a cidade pode fazer é diminuir a diferença, porque o resultado do estado é a soma de todas as urnas. A meta: Lula acima de 25 mil votos e Flávio com menos de 20 mil de vantagem.</p>
+    <div class="alerta"><p style="margin:0">Chamar todo mundo à urna não ajuda. Quem faltou se parece com quem votou, e quem votou deu 2 a 1 para Flávio. Por isso o trabalho se divide em três frentes.</p></div>
+    <div class="tarefas" id="frentes"></div>
+    <div class="placar" id="placar"></div>
+    <div id="mapa" role="region" aria-label="Mapa dos locais de votação de Guarapari"></div>
+    <p class="mute" style="margin-top:8px">Cada ponto é um local de votação; toque para ver o resultado. Os números marcam a ordem de passagem e a linha liga os pontos em reta: o trajeto de rua fica com quem conhece o bairro. Círculo tracejado: 200 m da escola, onde carro de som não entra em dia de aula.</p>
+    <div class="rotas" id="rotas"></div>
+  </div>
+</section>
+
+<section class="bloco c-verde" id="lambe">
+  <div class="wrap">
+    <h2 class="selo">Lambe sem dor de cabeça</h2>
+    <p class="lead">O lambe pode ir para a rua dentro da lei. A diferença está em onde colar e no que o papel traz.</p>
+    <div class="colunas">
+      <div class="pode">
+        <h3 style="margin-top:0">Pode</h3>
+        <ul class="lista">
+          <li>Muro, portão ou fachada de casa, com autorização de quem mora ou é dono.</li>
+          <li>Até meio metro quadrado por lugar: no máximo o tamanho de uma folha A1.</li>
+          <li>Sempre de graça: ninguém paga nem recebe para ceder o muro.</li>
+        </ul>
+        <p class="mute" style="margin:10px 0 0">Lei 9.504/1997, art. 37, §§ 2º e 8º.</p>
+      </div>
+      <div class="naopode">
+        <h3 style="margin-top:0">Não pode</h3>
+        <ul class="lista">
+          <li>Poste, viaduto, passarela, ponte, ponto de ônibus, placa, árvore, canteiro, muro de escola ou de prédio público.</li>
+          <li>Loja, shopping, igreja, clube, estádio, cinema, mesmo sendo privados.</li>
+          <li>Cobrir, rasgar ou riscar cartaz de outro candidato. Isso é crime.</li>
+        </ul>
+        <p class="mute" style="margin:10px 0 0">Lei 9.504/1997, art. 37, caput, §§ 1º e 4º; Código Eleitoral, art. 331.</p>
+      </div>
+    </div>
+    <h3>Se colar no lugar errado</h3>
+    <p>O responsável é notificado para limpar e, se não limpar, paga multa de R$ 2 mil a R$ 8 mil. Fora isso, colar em patrimônio público pode virar ocorrência policial. "Só é crime se pegarem" não vale a pena a três semanas da eleição.</p>
+    <h3>O que o papel precisa trazer</h3>
+    <div class="alerta">
+      <p style="margin:0">Todo impresso de campanha leva no rodapé o CNPJ ou CPF de quem imprimiu e de quem pagou, e a tiragem (Lei 9.504/1997, art. 38, § 1º). Sem isso, o material é irregular. Antes de imprimir, confira o arquivo.</p>
+    </div>
+    <h3>Na hora de sair</h3>
+    <ul class="lista">
+      <li>Em dupla ou trio, de dia ou no começo da noite.</li>
+      <li>Cola de farinha ou de polvilho, rolinho e balde. Peça licença ao morador antes.</li>
+      <li>Tire uma foto de cada ponto e mande no grupo: ajuda a não colar duas vezes no mesmo lugar.</li>
+      <li>Última colagem: 24/10.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="bloco c-azul alt" id="conversa">
+  <div class="wrap">
+    <h2 class="selo">Conversa de porta</h2>
+    <p class="fala">"Boa tarde, a gente é aqui do bairro e está conversando com os vizinhos sobre o dia 25. No primeiro turno, o que pesou na sua escolha?"</p>
+    <p>Pergunte antes de falar. Ouça. Cinco minutos por porta, no máximo.</p>
+    <h3>Se a pessoa…</h3>
+    <div class="perfil"><b>anulou ou votou em branco<span>3.549 em Guarapari</span></b><p>Não discuta política nacional. Pergunte: "O que mudou pra você nos últimos dois anos?" Para quem tem carteira assinada: desde janeiro, quem ganha até R$ 5 mil não paga imposto de renda (Lei 15.270/2025).</p></div>
+    <div class="perfil"><b>votou em Cury<span>2.155</span></b><p>Valoriza diálogo e tom calmo. Fale de cuidado: SUS, saúde mental, escola. Nada de briga.</p></div>
+    <div class="perfil"><b>votou em Renan<span>1.853</span></b><p>Não discuta. Se abrir conversa, o ponto comum é não querer clã no poder. Deixe o contato e siga.</p></div>
+    <div class="perfil"><b>votou em Caiado<span>1.304</span></b><p>Prioridade baixa. Agradeça e siga.</p></div>
+    <div class="perfil"><b>já votou em Lula</b><p>"Dia 25 tem de novo, das 8h às 17h, no mesmo lugar. Sabe onde vota?" O local aparece no app e-Título. O risco aqui é a pessoa não voltar.</p></div>
+    <h3>Não faça</h3>
+    <ul class="lista">
+      <li>Prometer o que a campanha não promete.</li>
+      <li>Falar de pesquisa ou repassar boato.</li>
+      <li>Na dúvida: "Não sei, vou perguntar e te volto."</li>
+    </ul>
+    <p style="margin-top:20px"><a class="botao" href="roteiro.html" target="_blank" rel="noopener">Roteiro de bolso para imprimir</a> <span class="mute">A6, frente e verso</span></p>
+  </div>
+</section>
+
+<section class="bloco c-vermelho" id="mensagens">
+  <div class="wrap">
+    <h2 class="selo">Mensagens para os seus contatos</h2>
+    <p class="lead">Mensagem pessoal, com o nome da pessoa, rende mais que corrente. Troque as palavras pelas suas.</p>
+    <div class="alerta">
+      <ul class="lista">
+        <li>Só para quem já está na sua agenda. Nada de lista comprada nem disparo em massa.</li>
+        <li>Não pague impulsionamento: só candidato, partido e coligação podem.</li>
+        <li>Último envio: 24/10. No dia 25 é proibido publicar conteúdo novo.</li>
+      </ul>
+    </div>
+    <div class="msg">
+      <h3 style="margin:0">1. Quem votou Lula</h3>
+      <p class="quando">Entre 18 e 23/10</p>
+      <blockquote>Oi, [nome]! Dia 25 tem 2º turno, das 8h às 17h, no mesmo lugar em que você votou no dia 4. Se não lembrar a seção, o app e-Título mostra. Conto com você.</blockquote>
+      <button type="button" class="copiar">Copiar</button>
+    </div>
+    <div class="msg">
+      <h3 style="margin:0">2. Véspera, para quem votou Lula</h3>
+      <p class="quando">24/10, até 22h</p>
+      <blockquote>[nome], amanhã é o 2º turno, das 8h às 17h. Leva documento com foto ou o e-Título. Cedo a fila é menor.</blockquote>
+      <button type="button" class="copiar">Copiar</button>
+    </div>
+    <div class="msg">
+      <h3 style="margin:0">3. Quem anulou ou votou em branco</h3>
+      <p class="quando">Uma vez, até 24/10. Só para quem você conhece; se a pessoa não quiser conversar, pare.</p>
+      <blockquote>[nome], sei que no 1º turno você não quis nenhum dos dois. Te conto uma coisa concreta: desde janeiro, quem ganha até R$ 5 mil por mês não paga mais imposto de renda. A proposta foi do governo Lula e o Congresso aprovou por unanimidade (Lei 15.270/2025). Pensa nisso no dia 25.</blockquote>
+      <button type="button" class="copiar">Copiar</button>
+    </div>
+    <div class="msg">
+      <h3 style="margin:0">4. Depois de uma conversa boa na porta</h3>
+      <p class="quando">No mesmo dia</p>
+      <blockquote>Oi, [nome], aqui é [seu nome], a gente conversou hoje aí na [rua/bairro]. Obrigado pelo papo. Qualquer dúvida sobre o dia 25, me chama.</blockquote>
+      <button type="button" class="copiar">Copiar</button>
+    </div>
+  </div>
+</section>
+
+<section class="bloco c-verde alt" id="prazos">
+  <div class="wrap">
+    <h2 class="selo">Lei e prazos</h2>
+    <div class="prazos">
+      <div class="prazo"><span class="d">Até 22/10</span><p>Último dia de comício.</p></div>
+      <div class="prazo"><span class="d">Até 22h de 24/10</span><p>Caminhada, carreata, passeata, distribuição de material e carro de som. Carro de som só acompanhando ato, até 80 dB, das 8h às 22h e a mais de 200 m de escola, igreja ou hospital em funcionamento.</p></div>
+      <div class="prazo"><span class="d">24 a 26/10</span><p>Ninguém transporta eleitor: só ônibus de linha ou carro da própria família. Carona e van são crime (Lei 6.091/1974, arts. 5º e 11). Levar voluntário até uma colagem ou caminhada pode até 23/10; a partir de 24/10, cada um vai por conta própria.</p></div>
+      <div class="prazo"><span class="d">25/10</span><p>Votação das 8h às 17h. Pode: camiseta, broche, adesivo ou bandeira, sozinho e em silêncio. Não pode: abordar eleitor, distribuir material, juntar grupo na porta da seção nem publicar conteúdo novo na internet.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="bloco c-azul" id="materiais">
+  <div class="wrap">
+    <h2 class="selo">Materiais</h2>
+    <div class="materiais" id="lista-materiais"><p class="mute">Carregando…</p></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Site de apoio à organização de voluntários. Não é material oficial de campanha.</p>
+    <p>Responsável pelo conteúdo: <span id="responsavel">a definir pelo grupo antes da abertura pública</span>.</p>
+    <p>Dados: boletins de urna do TSE, 1º turno de 04/10/2026. Sem rastreamento de visitas.</p>
+    <p>Foto de Lula: Ricardo Stuckert, 05/07/2022, <a href="https://commons.wikimedia.org/wiki/File:05.07.2022-_Ex-presidente_Luiz_In%C3%A1cio_Lula_da_Silva.jpg" target="_blank" rel="noopener">via Wikimedia Commons</a>, licença <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Recortada para este site, sob a mesma licença.</p>
+  </div>
+</footer>
+
+<script src="vendor/leaflet.js"></script>
+<script src="dados.js"></script>
+<script>
+(function () {
+  var PLANILHA = "1Y9cl-konrDtzeCNFcF1KtoIcDhGlKbr6AfAJKI5qmWE";
+  var ELEICAO = new Date(2026, 9, 25);
+  var DIAS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+  var fmt = new Intl.NumberFormat("pt-BR");
+
+  document.getElementById("link-planilha").href = "https://docs.google.com/spreadsheets/d/" + PLANILHA + "/edit";
+
+  var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  var faltam = Math.round((ELEICAO - hoje) / 86400000);
+  var cont = document.getElementById("contagem");
+  if (faltam > 1) { cont.innerHTML = "Faltam <b></b> dias."; cont.querySelector("b").textContent = faltam; }
+  else if (faltam === 1) cont.textContent = "É amanhã.";
+  else if (faltam === 0) cont.textContent = "É hoje. Vote cedo.";
+
+  function el(tag, cls, texto) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (texto != null) e.textContent = texto;
+    return e;
+  }
+
+  function lerCsv(texto) {
+    var linhas = [], campo = "", linha = [], aspas = false;
+    for (var i = 0; i < texto.length; i++) {
+      var c = texto[i];
+      if (aspas) {
+        if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; }
+        else if (c === '"') aspas = false;
+        else campo += c;
+      } else if (c === '"') aspas = true;
+      else if (c === ",") { linha.push(campo); campo = ""; }
+      else if (c === "\n") { linha.push(campo); linhas.push(linha); linha = []; campo = ""; }
+      else if (c !== "\r") campo += c;
+    }
+    if (campo || linha.length) { linha.push(campo); linhas.push(linha); }
+    var cab = (linhas.shift() || []).map(function (h) { return h.trim().toLowerCase(); });
+    return linhas
+      .filter(function (l) { return l.some(function (v) { return v.trim(); }); })
+      .map(function (l) { var o = {}; cab.forEach(function (h, j) { o[h] = (l[j] || "").trim(); }); return o; });
+  }
+
+  function aba(nome) {
+    var url = "https://docs.google.com/spreadsheets/d/" + PLANILHA + "/gviz/tq?tqx=out:csv&sheet=" + encodeURIComponent(nome);
+    return fetch(url, { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(lerCsv);
+  }
+
+  function dataDe(texto) {
+    var m = /^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/.exec(texto);
+    if (!m) return null;
+    var ano = m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : 2026;
+    return new Date(ano, +m[2] - 1, +m[1]);
+  }
+
+  aba("agenda").then(function (itens) {
+    var alvo = document.getElementById("lista-agenda");
+    alvo.textContent = "";
+    var lista = itens
+      .filter(function (a) { return a.acao; })
+      .map(function (a) { a._d = dataDe(a.data); return a; })
+      .filter(function (a) { return !a._d || a._d >= hoje; })
+      .sort(function (x, y) {
+        if (x._d && y._d) return x._d - y._d || (x.hora || "").localeCompare(y.hora || "");
+        return x._d ? -1 : y._d ? 1 : 0;
+      });
+    if (!lista.length) { alvo.appendChild(el("p", "mute", "Nenhuma ação marcada ainda.")); return; }
+    lista.forEach(function (a) {
+      var card = el("div", "acao");
+      var dia = el("div", "dia" + (a._d ? "" : " combinar"));
+      if (a._d) {
+        dia.textContent = a._d.getDate() + "/" + (a._d.getMonth() + 1);
+        dia.appendChild(el("small", null, DIAS[a._d.getDay()] + (a.hora ? ", " + a.hora : "")));
+      } else {
+        dia.textContent = a.data || "a combinar";
+      }
+      var corpo = el("div");
+      corpo.appendChild(el("b", null, a.acao));
+      var det = [a.local, a.encontro && "encontro: " + a.encontro, a.quem_puxa && "puxa: " + a.quem_puxa].filter(Boolean).join(" · ");
+      if (det) corpo.appendChild(el("div", "det", det));
+      if (a.obs) corpo.appendChild(el("div", "det", a.obs));
+      card.appendChild(dia); card.appendChild(corpo);
+      alvo.appendChild(card);
+    });
+  }).catch(function () {
+    var alvo = document.getElementById("lista-agenda");
+    alvo.textContent = "";
+    alvo.appendChild(el("p", "mute", "Não deu para carregar a agenda agora. Abra a planilha pelo link abaixo."));
+  });
+
+  aba("materiais").then(function (itens) {
+    var alvo = document.getElementById("lista-materiais");
+    alvo.textContent = "";
+    var lista = itens.filter(function (m) { return m.titulo && /^https:\/\//i.test(m.link); });
+    if (!lista.length) {
+      alvo.appendChild(el("p", "mute", "Ainda sem arquivos. Quem tiver o PDF de um lambe ou card coloca o link na aba \"materiais\" da planilha."));
+      return;
+    }
+    lista.forEach(function (m) {
+      var a = el("a", "material");
+      a.href = m.link; a.target = "_blank"; a.rel = "noopener";
+      a.appendChild(el("b", null, m.titulo));
+      var sub = [m.tipo, m.obs].filter(Boolean).join(" · ");
+      if (sub) a.appendChild(el("span", null, sub));
+      alvo.appendChild(a);
+    });
+  }).catch(function () {
+    var alvo = document.getElementById("lista-materiais");
+    alvo.textContent = "";
+    alvo.appendChild(el("p", "mute", "Não deu para carregar a lista agora."));
+  });
+
+  document.querySelectorAll(".copiar").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var texto = b.previousElementSibling.textContent.trim();
+      navigator.clipboard.writeText(texto).then(function () {
+        b.textContent = "Copiado"; b.classList.add("ok");
+        setTimeout(function () { b.textContent = "Copiar"; b.classList.remove("ok"); }, 1800);
+      });
+    });
+  });
+
+  var R = window.VC_RESUMO;
+  var placar = document.getElementById("placar");
+  [["Lula", R.lula], ["Flávio", R.flavio], ["Disputáveis", R.disputaveis], ["Faltaram", R.abstencoes]].forEach(function (p) {
+    var sp = el("span", null, p[0] + " ");
+    sp.appendChild(el("b", null, fmt.format(p[1])));
+    placar.appendChild(sp);
+  });
+
+  var mapa = L.map("mapa", { scrollWheelZoom: false });
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18, opacity: 0.6, referrerPolicy: "strict-origin-when-cross-origin",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(mapa);
+
+  function ficha(l, tag, cor) {
+    var div = el("div");
+    div.appendChild(el("b", null, l.n));
+    div.appendChild(el("div", null, l.b + " · " + l.e));
+    div.appendChild(el("div", null, "Lula " + fmt.format(l.lula) + " × Flávio " + fmt.format(l.flavio)));
+    div.appendChild(el("div", null, fmt.format(l.disp) + " votos disputáveis · " + fmt.format(l.aptos) + " eleitores"));
+    if (tag) { var t = el("div", null, tag); t.style.color = cor; t.style.fontWeight = "700"; t.style.marginTop = "4px"; div.appendChild(t); }
+    return div;
+  }
+
+  window.VC_OUTROS.forEach(function (l) {
+    L.circleMarker([l.la, l.lo], { radius: 4, color: "#fff", weight: 1, fillColor: "#9a968e", fillOpacity: 0.8 })
+      .bindPopup(ficha(l)).addTo(mapa);
+  });
+
+  var limites = [];
+  var cards = document.getElementById("frentes");
+  var rotas = document.getElementById("rotas");
+  window.VC_FRENTES.forEach(function (f) {
+    var tot = f.paradas.reduce(function (a, p) { return { d: a.d + p.disp, l: a.l + p.lula }; }, { d: 0, l: 0 });
+    var card = el("div", "tarefa");
+    card.style.borderTopColor = f.cor;
+    var tit = el("b", null, f.nome); tit.style.color = f.cor;
+    card.appendChild(tit);
+    card.appendChild(el("p", null, f.tarefa));
+    card.appendChild(el("p", "mute", f.paradas.length + " locais · " + fmt.format(tot.l) + " votos de Lula · " + fmt.format(tot.d) + " disputáveis"));
+    cards.appendChild(card);
+
+    L.polyline(f.paradas.map(function (p) { return [p.la, p.lo]; }), { color: f.cor, weight: 4, opacity: 0.8, dashArray: "1 8", lineCap: "round" }).addTo(mapa);
+    var caixa = el("div", "caixa");
+    var h = el("h3", null, f.nome); h.style.color = f.cor;
+    caixa.appendChild(h);
+    caixa.appendChild(el("p", "mute", "~" + String(f.km).replace(".", ",") + " km em linha reta"));
+    var ol = el("ol");
+    f.paradas.forEach(function (p, i) {
+      L.circle([p.la, p.lo], { radius: 200, color: f.cor, weight: 1, dashArray: "4 4", fillOpacity: 0.04 }).addTo(mapa);
+      var pino = L.divIcon({ className: "", html: '<div class="pino" style="border-color:' + f.cor + '">' + (i + 1) + "</div>", iconSize: [26, 26], iconAnchor: [13, 13] });
+      var m = L.marker([p.la, p.lo], { icon: pino }).bindPopup(ficha(p, f.nome, f.cor)).addTo(mapa);
+      if (f.enquadrar) limites.push([p.la, p.lo]);
+      var li = el("li", null, p.n);
+      li.appendChild(el("span", null, p.b + " · Lula " + fmt.format(p.lula) + " · disputáveis " + fmt.format(p.disp)));
+      li.addEventListener("click", function () {
+        document.getElementById("mapa").scrollIntoView({ behavior: "smooth", block: "center" });
+        mapa.setView([p.la, p.lo], 16); m.openPopup();
+      });
+      ol.appendChild(li);
+    });
+    caixa.appendChild(ol);
+    rotas.appendChild(caixa);
+  });
+  mapa.fitBounds(limites, { padding: [20, 20] });
+})();
+</script>
+</body>
+</html>
